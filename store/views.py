@@ -1,18 +1,20 @@
 from django.db.models import Count
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Product, Collection
-from .serializers import ProductSerializer, CollectionSerializer
+from .models import Product, Collection, Review
+from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
+from .filters import ProductFilter
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
     
     def get_queryset(self):
-        # add logic here if diff queryset for diff function needed
-        return self.queryset
+        return Product.objects.all()
     
     def get_serializer_class(self):
         return ProductSerializer
@@ -42,3 +44,13 @@ class CollectionViewSet(ModelViewSet):
                             status=status.HTTP_405_METHOD_NOT_ALLOWED)
         collection.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+class ReviewViewSet(ModelViewSet):
+    serializer_class = ReviewSerializer
+    
+    def get_queryset(self):
+        return Review.objects.filter(product_id = self.kwargs['product_pk'])
+    
+    def get_serializer_context(self):
+        return {"product_id": self.kwargs['product_pk']}  
