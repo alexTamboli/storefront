@@ -53,12 +53,16 @@ class ProductAdmin(admin.ModelAdmin):
         updated_count = queryset.update(inventory = 0)
         self.message_user(request, f'{updated_count} products were succesfully updated.')
         
+        
 @admin.register(models.Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ['first_name', 'last_name', 'membership', 'orders_count']
     list_editable = ['membership']
     list_per_page = 20
-    search_fields = ['first_name__istartswith', 'last_name__istartswith']
+    list_select_related = ['user']
+    ordering = ['user__first_name', 'user__last_name']
+    search_fields = ['user__first_name__istartswith', 'user__last_name__istartswith']
+    autocomplete_fields = ['user']
     
     @admin.display(ordering='ordercount')
     def orders_count(self, customer):
