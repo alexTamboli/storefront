@@ -7,6 +7,7 @@ from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateMo
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.exceptions import NotFound
 
 from .models import Product, Collection, Review, Cart, CartItem
 # from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer, CartSerializer, CartItemSerializer
@@ -82,9 +83,18 @@ class CartItemViewSet(ModelViewSet):
     http_method_names = ['get', 'post', 'patch', 'delete']
     
     def get_queryset(self):
-        return CartItem.objects \
-                .select_related('product') \
-                .filter(cart_id = self.kwargs['cart_pk'])
+        # Check if the cart with the specified cart_pk exists
+        cart_pk = self.kwargs.get('cart_pk')
+        try:
+            Cart.objects.get(pk=cart_pk)
+        except Cart.DoesNotExist:
+            raise NotFound('Cart not found.')
+        return CartItem.objects.select_related('product').filter(cart_id=cart_pk)
+    
+        # Mosh code below, it is wrong, since invalid cart_id will still return [] as queryset 
+        # return CartItem.objects \
+        #         .select_related('product') \
+        #         .filter(cart_id = self.kwargs['cart_pk'])
                     
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -103,7 +113,7 @@ class CustomerViewSet(ModelViewSet):
         
     @action(detail=False, methods=['GET', 'PUT', 'PATCH'], permission_classes=[IsAuthenticated])
     def me(self, request):
-        customer, created = Customer.objects.get_or_create(pk=request.user.id)
+        customer = Customer.objects.get(pk=request.user.id)
         if request.method == 'GET':
             serializer = CustomerSerializer(customer)
             return Response(serializer.data)
@@ -122,4 +132,34 @@ class CustomerViewSet(ModelViewSet):
     def history(self, request, pk):
         return Response('ok')
             
+            
+class OrderViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
+    
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
+    
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.all()
+        customer_id = Customer.objects.only('id').get(user_id=self.request.user.id)
+        return Order.objects.filter(customer_id=customer_id)
+    
+    def get_serializer_class(self): 
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        elif self.request.method == 'PATCH':
+            return UpdateOrderSerializer
+        return OrderSerializer
+    
+    def create(self, request, *args, **kwargs):
+        serializer = CreateOrderSerializer(
+            data=request.data, 
+            context = {"user_id": self.request.user.id})
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save()
+        serializer = OrderSerializer(order)
+        return Response(serializer.data)
     
