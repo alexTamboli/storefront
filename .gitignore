@@ -1,6 +1,7 @@
 # CUSTOM
 .vscode
 .gitignore
+migrate_error_break_query.txt
 
 
 
