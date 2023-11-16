@@ -1,7 +1,10 @@
 # CUSTOM
 .vscode
 .gitignore
+general.log
 migrate_error_break_query.txt
+/static/
+/media/
 
 
 

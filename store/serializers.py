@@ -21,7 +21,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
         return ProductImage.objects.create(product_id=product_id, **validated_data)
 
 class ProductSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True)
+    images = ProductImageSerializer(many=True, read_only=True)
     
     class Meta:
         model = Product
