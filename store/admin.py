@@ -18,7 +18,7 @@ class InventoryFilter(admin.SimpleListFilter):
             ('>10', 'OK')
             ]
         
-    def queryset(self, request: Any, queryset: QuerySet[Any]) -> QuerySet[Any] | None:
+    def queryset(self, request, queryset: QuerySet) -> QuerySet:
         if self.value() == '<10':
             return queryset.filter(inventory__lt=10)
         elif self.value() == '>10':

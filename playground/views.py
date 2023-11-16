@@ -9,7 +9,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework.views import APIView
 # from templated_mail.mail import BaseEmailMessage
 
-from .tasks import notify_customers
+# from .tasks import notify_customers
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ logger.info
 
 # Create your views here.
 class HelloView(APIView):
-    # @method_decorator(cache_page(5*60))
+    @method_decorator(cache_page(2*60))
     def get(self, request):
         try:
             logger.info('Calling Httpbin')
