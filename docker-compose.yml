@@ -3,28 +3,17 @@ version: '3.9'
 services:
   web:
     build: .
-    command: ./wait-for-it.sh postgresql:5432 -- ./docker-entrypoint.sh
+    command: ./docker-entrypoint.sh
+
     ports:
       - 8000:8000
     depends_on:
       - redis
-      - postgresql
+      # - postgresql
     restart: on-failure
     volumes:
       - .:/app
       - ./wait-for-it.sh:/app/wait-for-it.sh:ro
-
-  postgresql:
-    image: postgres:15.0
-    ports:
-      - 5432:5432
-    restart: always
-    environment:
-      - POSTGRES_DB=storefront
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=MyPassword
-    volumes:
-      - postgresqldata:/var/lib/postgresql/data
 
   redis:
     image: redis:6.2-alpine
@@ -73,7 +62,7 @@ services:
 
   tests:
     build: .
-    command: ./wait-for-it.sh postgresql:5432 -- ptw
+    command: ptw
     depends_on:
       - redis
     tty: true
@@ -92,5 +81,4 @@ services:
       - web
 
 volumes:
-  postgresqldata:
   redisdata:

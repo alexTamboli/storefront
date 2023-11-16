@@ -160,7 +160,7 @@ ADMINS = [
 CELERY_BEAT_SCHEDULE = {
     'notify_customers': {
         'task': 'playground.tasks.notify_customers',
-        'schedule': 30,
+        'schedule': 86400,
         'args': ['Hello World'],
     },
 }

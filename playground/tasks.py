@@ -1,9 +1,9 @@
-# from time import sleep
-# from celery import shared_task
+from time import sleep
+from celery import shared_task
 
-# @shared_task
-# def notify_customers(message):
-#     print("Sending 10k emails...")
-#     print(message)
-#     sleep(15)
-#     print("Emails were successfully sent")
+@shared_task
+def notify_customers(message):
+    print("Sending 10k emails...")
+    print(message)
+    sleep(86400)
+    print("Emails were successfully sent") 
