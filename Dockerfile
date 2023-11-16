@@ -20,5 +20,10 @@ RUN pipenv install --system --dev
 # Copy the application files into the image
 COPY . /app/
 
+
+COPY wait-for-it.sh wait-for-it.sh
+RUN chmod +x wait-for-it.sh
+
+
 # Expose port 8000 on the container
 EXPOSE 8000
