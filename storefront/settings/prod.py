@@ -3,7 +3,7 @@ from .common import *
 DEBUG = False
 SECRET_KEY = config('SECRET_KEY')
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.31.14.85', 'alextamboli.online']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.31.14.85', 'ec2-65-1-106-151.ap-south-1.compute.amazonaws.com', 'alextamboli.online']
 
 DATABASES = {
     'default': {
