@@ -9,7 +9,6 @@ services:
       - 8000:8000
     depends_on:
       - redis
-      # - postgresql
     restart: on-failure
     volumes:
       - .:/app
@@ -60,14 +59,14 @@ services:
     ports:
       - 5555:5555
 
-  tests:
-    build: .
-    command: ptw
-    depends_on:
-      - redis
-    tty: true
-    volumes:
-      - .:/app
+  # tests:
+  #   build: .
+  #   command: ptw
+  #   depends_on:
+  #     - redis
+  #   tty: true
+  #   volumes:
+  #     - .:/app
 
   nginx:
     image: nginx:latest
